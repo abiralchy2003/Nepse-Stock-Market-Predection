@@ -12,6 +12,37 @@ data = pd.read_excel(file_path)
 data['Date'] = pd.to_datetime(data['Date'])
 data = data.sort_values('Date')
 
+data['Range'] = data['High'] - data['Low']
+
+
+sns.set(style="whitegrid")
+plt.figure(figsize=(14, 7))
+plt.plot(data['Date'], data['Range'], label='Daily Range (High-Low)', color='orange')
+plt.title("NEPSE Stock Daily Range (Volatility)")
+plt.xlabel("Date")
+plt.ylabel("Range (NPR)")
+plt.legend()
+plt.show()
+
+
+plt.figure(figsize=(14, 7))
+plt.plot(data['Date'], data['Change'], label='Change (NPR)', color='purple')
+plt.title("NEPSE Daily Change (NPR)")
+plt.xlabel("Date")
+plt.ylabel("Change (NPR)")
+plt.legend()
+plt.show()
+
+plt.figure(figsize=(14, 7))
+plt.plot(data['Date'], data['Per Change (%)'], label='Percent Change (%)', color='red')
+plt.title("NEPSE Percentage Change Over Time")
+plt.xlabel("Date")
+plt.ylabel("Percentage Change (%)")
+plt.legend()
+plt.show()
+data['SMA_50'] = data['Close'].rolling(window=50).mean()
+data['EMA_50'] = data['Close'].ewm(span=50, adjust=False).mean()
+
 data['SMA_50'] = data['Close'].rolling(window=50).mean()
 data['EMA_50'] = data['Close'].ewm(span=50, adjust=False).mean()
 
@@ -53,3 +84,13 @@ plt.xlabel("Date")
 plt.ylabel("Price (NPR)")
 plt.legend()
 plt.show()
+
+data['Prediction'] = data['Close'].shift(-1)
+data.dropna(inplace=True)
+
+
+X = data[['High', 'Low', 'Close', 'Change', 'Per Change (%)']]
+y = data['Prediction']
+
+
+X_train, X
