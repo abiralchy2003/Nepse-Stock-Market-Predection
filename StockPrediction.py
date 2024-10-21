@@ -4,13 +4,27 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-file_path =r"C:\Users\DELL\Downloads\NepseData.xlsx"
+file_path = "data/NepseData.xlsx"
 data = pd.read_excel(file_path)
 
 data['Date'] = pd.to_datetime(data['Date'])
 data = data.sort_values('Date')
 
+data['SMA_50'] = data['Close'].rolling(window=50).mean()
+data['EMA_50'] = data['Close'].ewm(span=50, adjust=False).mean()
+
+sns.set(style="whitegrid")
+plt.figure(figsize=(14, 7))
+plt.plot(data['Date'], data['Close'], label='Close Price', color='blue')
+plt.plot(data['Date'], data['SMA_50'], label='50-day SMA', color='green')
+plt.plot(data['Date'], data['EMA_50'], label='50-day EMA', color='red')
+plt.title("NEPSE Stock Price with 50-day SMA and EMA")
+plt.xlabel("Date")
+plt.ylabel("Price (NPR)")
+plt.legend()
+plt.show()
 data['Prediction'] =data['Close'].shift(-1)
 data.dropna(inplace=True)
 
